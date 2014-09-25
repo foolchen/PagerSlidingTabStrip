@@ -10,6 +10,23 @@
     <style name="ActionBarStyle" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
         <item name="android:icon">@drawable/ic_launcher_actionbar</item>
         <item name="android:background">#FF666666</item>
+        <item name="pstsStyle">@style/CustomStyle</item>
+    </style>
+
+    <style name="Widget"/>
+
+    <style name="CustomStyle" parent="Widget">
+        <item name="pstsIndicatorColor">@android:color/holo_red_light</item>
+        <item name="pstsDividerColor">@android:color/transparent</item>
+        <item name="pstsIndicatorHeight">3dp</item>
+        <item name="pstsTextSize">16dp</item>
+        <item name="pstsTextColor">@color/tab_text_color_selector</item>
+    </style>
+
+    <style name="CustomStyle.CustomStyleText" parent="android:TextAppearance.Medium">
+        <item name="android:typeface">monospace</item>
+        <item name="android:textSize">16dp</item>
+        <item name="android:textColor">@android:color/holo_blue_bright</item>
     </style>
 
 </resources>

@@ -1,5 +1,7 @@
 <resources>
 
-    <style name="AppBaseTheme" parent="android:Theme.Holo.Light"></style>
+    <style name="AppBaseTheme" parent="android:Theme.Holo.Light">
+        <item name="pstsStyle">@style/CustomStyle</item>
+    </style>
 
 </resources>

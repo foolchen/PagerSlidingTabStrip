@@ -1,20 +1,19 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
 buildscript {
-
     repositories {
-        mavenCentral()
+        mavenLocal()
+        maven { url 'http://maven.oschina.net/content/groups/public/' }
     }
-
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.6.+'
+        classpath 'com.android.tools.build:gradle:0.13.0'
     }
-
 }
 
 allprojects {
-    version = VERSION_NAME
-    group = GROUP
-
     repositories {
-        mavenCentral()
+        //mavenLocal()
+        maven {   url "${System.env.HOME}/.m2/repository" }
+        maven { url 'http://maven.oschina.net/content/groups/public/' }
     }
 }

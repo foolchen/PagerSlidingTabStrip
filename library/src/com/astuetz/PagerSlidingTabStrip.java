@@ -18,6 +18,7 @@ package com.astuetz;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -38,10 +39,9 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import com.astuetz.pagerslidingtabstrip.R;
 
 import java.util.Locale;
-
-import com.astuetz.pagerslidingtabstrip.R;
 
 public class PagerSlidingTabStrip extends HorizontalScrollView {
 
@@ -91,6 +91,7 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
 	private int tabTextColor = 0xFF666666;
 	private Typeface tabTypeface = null;
 	private int tabTypefaceStyle = Typeface.BOLD;
+    private ColorStateList colorStateList;
 
 	private int lastScrollX = 0;
 
@@ -151,7 +152,9 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
 		shouldExpand = a.getBoolean(R.styleable.PagerSlidingTabStrip_pstsShouldExpand, shouldExpand);
 		scrollOffset = a.getDimensionPixelSize(R.styleable.PagerSlidingTabStrip_pstsScrollOffset, scrollOffset);
 		textAllCaps = a.getBoolean(R.styleable.PagerSlidingTabStrip_pstsTextAllCaps, textAllCaps);
-
+        tabTextSize = a.getDimensionPixelSize(R.styleable.PagerSlidingTabStrip_pstsTextSize, tabTextSize);
+        //tabTextColor = a.getColor(R.styleable.PagerSlidingTabStrip_pstsTextColor, tabTextColor);
+        colorStateList = a.getColorStateList(R.styleable.PagerSlidingTabStrip_pstsTextColor);
 		a.recycle();
 
 		rectPaint = new Paint();
@@ -226,7 +229,7 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
 
 	private void addTextTab(final int position, String title) {
 
-		TextView tab = new TextView(getContext());
+		TextView tab = new TextView(getContext(),null,R.attr.pstsStyle);
 		tab.setText(title);
 		tab.setGravity(Gravity.CENTER);
 		tab.setSingleLine();
@@ -269,7 +272,10 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
 				TextView tab = (TextView) v;
 				tab.setTextSize(TypedValue.COMPLEX_UNIT_PX, tabTextSize);
 				tab.setTypeface(tabTypeface, tabTypefaceStyle);
-				tab.setTextColor(tabTextColor);
+                if(colorStateList==null)
+				    tab.setTextColor(tabTextColor);
+                else
+                    tab.setTextColor(colorStateList);
 
 				// setAllCaps() is only available from API 14, so the upper case is made manually if we are on a
 				// pre-ICS-build
@@ -370,8 +376,9 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
 		@Override
 		public void onPageScrollStateChanged(int state) {
 			if (state == ViewPager.SCROLL_STATE_IDLE) {
-				scrollToChild(pager.getCurrentItem(), 0);
-			}
+                int item = pager.getCurrentItem();
+                scrollToChild(item, 0);
+            }
 
 			if (delegatePageListener != null) {
 				delegatePageListener.onPageScrollStateChanged(state);
@@ -383,6 +390,11 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
 			if (delegatePageListener != null) {
 				delegatePageListener.onPageSelected(position);
 			}
+            for (int i = 0; i < tabCount; i++) {
+                final View child = tabsContainer.getChildAt(i);
+                final boolean isSelected = (i == position);
+                child.setSelected(isSelected);
+            }
 		}
 
 	}

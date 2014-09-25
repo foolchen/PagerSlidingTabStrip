@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="background_window">#FFE5E5E5</color>
+    <color name="color_title_default">#595757</color>
+    <color name="color_title_selected">@color/color_light_blue</color>
+    <color name="color_light_blue">#3ba1d9</color>
 </resources>
