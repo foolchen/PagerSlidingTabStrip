@@ -13,12 +13,13 @@
         <attr name="pstsTabBackground" format="reference" />
         <attr name="pstsShouldExpand" format="boolean" />
         <attr name="pstsTextAllCaps" format="boolean" />
-        <attr name="pstsTextSize" format="dimension"/>
-        <attr name="pstsTextColor" format="color"/>
+        <attr name="pstsTextSize" format="dimension" />
+        <attr name="pstsTextColor" format="color" />
+        <attr name="pstsTextBold" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="PagerSlidingTabStripStyle">
-        <attr name="pstsStyle" format="reference"/>
+        <attr name="pstsStyle" format="reference" />
     </declare-styleable>
 
 </resources>

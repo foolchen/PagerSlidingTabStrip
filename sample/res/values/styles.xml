@@ -5,6 +5,7 @@
     <style name="AppTheme" parent="AppBaseTheme">
         <item name="android:windowBackground">@color/background_window</item>
         <item name="android:actionBarStyle">@style/ActionBarStyle</item>
+        <item name="pstsStyle">@style/CustomStyle</item>
     </style>
 
     <style name="ActionBarStyle" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
@@ -21,12 +22,7 @@
         <item name="pstsIndicatorHeight">3dp</item>
         <item name="pstsTextSize">16dp</item>
         <item name="pstsTextColor">@color/tab_text_color_selector</item>
-    </style>
-
-    <style name="CustomStyle.CustomStyleText" parent="android:TextAppearance.Medium">
-        <item name="android:typeface">monospace</item>
-        <item name="android:textSize">16dp</item>
-        <item name="android:textColor">@android:color/holo_blue_bright</item>
+        <item name="pstsTextBold">false</item>
     </style>
 
 </resources>
