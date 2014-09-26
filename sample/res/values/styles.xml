@@ -14,7 +14,7 @@
         <item name="pstsStyle">@style/CustomStyle</item>
     </style>
 
-    <style name="Widget"/>
+    <style name="Widget" />
 
     <style name="CustomStyle" parent="Widget">
         <item name="pstsIndicatorColor">@android:color/holo_red_light</item>
@@ -23,6 +23,8 @@
         <item name="pstsTextSize">16dp</item>
         <item name="pstsTextColor">@color/tab_text_color_selector</item>
         <item name="pstsTextBold">false</item>
+        <item name="pstsUnderlineHeight">0dp</item>
+        <item name="pstsTabPaddingLeftRight">10dp</item>
     </style>
 
 </resources>

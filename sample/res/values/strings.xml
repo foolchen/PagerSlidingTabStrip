@@ -3,5 +3,6 @@
 
     <string name="app_name">PagerSlidingTabStrip</string>
     <string name="action_contact">Contact</string>
+    <string name="action_add">Add</string>
 
 </resources>

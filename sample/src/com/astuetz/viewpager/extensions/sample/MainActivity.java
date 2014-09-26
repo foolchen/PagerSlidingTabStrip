@@ -27,176 +27,247 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-
 import com.astuetz.PagerSlidingTabStrip;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 public class MainActivity extends FragmentActivity {
+    public static final String TAG = "MainActivity";
 
-	private final Handler handler = new Handler();
+    private final Handler handler = new Handler();
 
-	private PagerSlidingTabStrip tabs;
-	private ViewPager pager;
-	private MyPagerAdapter adapter;
+    private PagerSlidingTabStrip tabs;
+    private ViewPager pager;
+    private MyPagerAdapter adapter;
 
-	private Drawable oldBackground = null;
-	private int currentColor = 0xFF666666;
+    private Drawable oldBackground = null;
+    private int currentColor = 0xFF666666;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-		tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
-		pager = (ViewPager) findViewById(R.id.pager);
-		adapter = new MyPagerAdapter(getSupportFragmentManager());
+        tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+        pager = (ViewPager) findViewById(R.id.pager);
+        adapter = new MyPagerAdapter(getSupportFragmentManager());
 
-		pager.setAdapter(adapter);
+        pager.setAdapter(adapter);
 
-		final int pageMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources()
-				.getDisplayMetrics());
-		pager.setPageMargin(pageMargin);
+        final int pageMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources()
+                .getDisplayMetrics());
+        pager.setPageMargin(pageMargin);
 
-		tabs.setViewPager(pager);
+        tabs.setViewPager(pager);
 
-		//changeColor(currentColor);
-	}
+        //changeColor(currentColor);
+    }
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
-	}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+    int addCount = 0;
 
-		switch (item.getItemId()) {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
 
-		case R.id.action_contact:
-			QuickContactFragment dialog = new QuickContactFragment();
-			dialog.show(getSupportFragmentManager(), "QuickContactFragment");
-			return true;
+        switch (item.getItemId()) {
 
-		}
+            case R.id.action_contact:
+                QuickContactFragment dialog = new QuickContactFragment();
+                dialog.show(getSupportFragmentManager(), "QuickContactFragment");
+                return true;
 
-		return super.onOptionsItemSelected(item);
-	}
+            case R.id.action_add:
+                // add a fragment
+                ArrayList<String> titles = adapter.getTitles();
+                int currentItem = pager.getCurrentItem();
+                String currentTitle = titles.get(currentItem);
+                // save data
+                Map<String, String> savedData = new HashMap<String, String>();
+                for (String title : titles) {
+                    Fragment fragment = adapter.getFragment(title);
+                    if (fragment != null) {
+                        String data = ((SuperAwesomeCardFragment) fragment).getData();
+                        savedData.put(title, data);
+                    }
+                }
 
-	private void changeColor(int newColor) {
+                titles.add(1, "New Card " + (++addCount));
+                adapter = new MyPagerAdapter(getSupportFragmentManager(), titles);
+                for (int i = 0; i < titles.size(); i++) {
+                    String s = titles.get(i);
+                    if (s.equalsIgnoreCase(currentTitle)) {
+                        currentItem = i;
+                        break;
+                    }
+                }
+                adapter.setSavedData(savedData);
+                pager.setAdapter(adapter);
+                tabs.notifyDataSetChanged();
+                pager.setCurrentItem(currentItem);
 
-		tabs.setIndicatorColor(newColor);
+                return true;
 
-		// change ActionBar color just if an ActionBar is available
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+        }
 
-			Drawable colorDrawable = new ColorDrawable(newColor);
-			Drawable bottomDrawable = getResources().getDrawable(R.drawable.actionbar_bottom);
-			LayerDrawable ld = new LayerDrawable(new Drawable[] { colorDrawable, bottomDrawable });
+        return super.onOptionsItemSelected(item);
+    }
 
-			if (oldBackground == null) {
+    private void changeColor(int newColor) {
 
-				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-					ld.setCallback(drawableCallback);
-				} else {
-					getActionBar().setBackgroundDrawable(ld);
-				}
+        tabs.setIndicatorColor(newColor);
 
-			} else {
+        // change ActionBar color just if an ActionBar is available
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 
-				TransitionDrawable td = new TransitionDrawable(new Drawable[] { oldBackground, ld });
+            Drawable colorDrawable = new ColorDrawable(newColor);
+            Drawable bottomDrawable = getResources().getDrawable(R.drawable.actionbar_bottom);
+            LayerDrawable ld = new LayerDrawable(new Drawable[]{colorDrawable, bottomDrawable});
 
-				// workaround for broken ActionBarContainer drawable handling on
-				// pre-API 17 builds
-				// https://github.com/android/platform_frameworks_base/commit/a7cc06d82e45918c37429a59b14545c6a57db4e4
-				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-					td.setCallback(drawableCallback);
-				} else {
-					getActionBar().setBackgroundDrawable(td);
-				}
+            if (oldBackground == null) {
 
-				td.startTransition(200);
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                    ld.setCallback(drawableCallback);
+                } else {
+                    getActionBar().setBackgroundDrawable(ld);
+                }
 
-			}
+            } else {
 
-			oldBackground = ld;
+                TransitionDrawable td = new TransitionDrawable(new Drawable[]{oldBackground, ld});
 
-			// http://stackoverflow.com/questions/11002691/actionbar-setbackgrounddrawable-nulling-background-from-thread-handler
-			getActionBar().setDisplayShowTitleEnabled(false);
-			getActionBar().setDisplayShowTitleEnabled(true);
+                // workaround for broken ActionBarContainer drawable handling on
+                // pre-API 17 builds
+                // https://github.com/android/platform_frameworks_base/commit/a7cc06d82e45918c37429a59b14545c6a57db4e4
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                    td.setCallback(drawableCallback);
+                } else {
+                    getActionBar().setBackgroundDrawable(td);
+                }
 
-		}
+                td.startTransition(200);
 
-		currentColor = newColor;
+            }
 
-	}
+            oldBackground = ld;
 
-	public void onColorClicked(View v) {
+            // http://stackoverflow.com/questions/11002691/actionbar-setbackgrounddrawable-nulling-background-from-thread-handler
+            getActionBar().setDisplayShowTitleEnabled(false);
+            getActionBar().setDisplayShowTitleEnabled(true);
 
-		int color = Color.parseColor(v.getTag().toString());
-		changeColor(color);
+        }
 
-	}
+        currentColor = newColor;
 
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		outState.putInt("currentColor", currentColor);
-	}
+    }
 
-	@Override
-	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		super.onRestoreInstanceState(savedInstanceState);
-		currentColor = savedInstanceState.getInt("currentColor");
-		changeColor(currentColor);
-	}
+    public void onColorClicked(View v) {
 
-	private Drawable.Callback drawableCallback = new Drawable.Callback() {
-		@Override
-		public void invalidateDrawable(Drawable who) {
-			getActionBar().setBackgroundDrawable(who);
-		}
+        int color = Color.parseColor(v.getTag().toString());
+        changeColor(color);
 
-		@Override
-		public void scheduleDrawable(Drawable who, Runnable what, long when) {
-			handler.postAtTime(what, when);
-		}
+    }
 
-		@Override
-		public void unscheduleDrawable(Drawable who, Runnable what) {
-			handler.removeCallbacks(what);
-		}
-	};
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("currentColor", currentColor);
+    }
 
-	public class MyPagerAdapter extends FragmentPagerAdapter {
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        currentColor = savedInstanceState.getInt("currentColor");
+        changeColor(currentColor);
+    }
 
-		private final String[] TITLES = { "Categories", "Home", "Top Paid", "Top Free", "Top Grossing", "Top New Paid",
-				"Top New Free", "Trending" };
+    private Drawable.Callback drawableCallback = new Drawable.Callback() {
+        @Override
+        public void invalidateDrawable(Drawable who) {
+            getActionBar().setBackgroundDrawable(who);
+        }
 
-		public MyPagerAdapter(FragmentManager fm) {
-			super(fm);
-		}
+        @Override
+        public void scheduleDrawable(Drawable who, Runnable what, long when) {
+            handler.postAtTime(what, when);
+        }
 
-		@Override
-		public CharSequence getPageTitle(int position) {
-			return TITLES[position];
-		}
+        @Override
+        public void unscheduleDrawable(Drawable who, Runnable what) {
+            handler.removeCallbacks(what);
+        }
+    };
 
-		@Override
-		public int getCount() {
-			return TITLES.length;
-		}
+    public class MyPagerAdapter extends FragmentStatePagerAdapter {
 
-		@Override
-		public Fragment getItem(int position) {
-			return SuperAwesomeCardFragment.newInstance(position);
-		}
+        private final String[] TITLES = {"Categories", "Home", "Top Paid", "Top Free", "Top Grossing", "Top New Paid",
+                "Top New Free", "Trending"};
+        private ArrayList<String> titles;
+        private Map<String, Fragment> fMap = new HashMap<String, Fragment>();
+        private Map<String, String> savedData;
 
-	}
+        public MyPagerAdapter(FragmentManager fm) {
+            super(fm);
+            titles = new ArrayList<String>();
+            Collections.addAll(titles, TITLES);
+        }
+
+        public MyPagerAdapter(FragmentManager fm, ArrayList<String> titles) {
+            super(fm);
+            this.titles = titles;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return titles.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return titles.size();
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            String title = getPageTitle(position).toString();
+            Fragment fragment = fMap.get(title);
+            String savedData = this.savedData == null ? null : this.savedData.get(title);
+            if (fragment == null) {
+                fragment = SuperAwesomeCardFragment.newInstance(position, getPageTitle(position).toString(), savedData);
+                fMap.put(title, fragment);
+            }
+            return fragment;
+        }
+
+        public void add(int position, String title) {
+            titles.add(position, title);
+            notifyDataSetChanged();
+        }
+
+        public ArrayList<String> getTitles() {
+            return titles;
+        }
+
+        public Fragment getFragment(String title) {
+            return fMap.get(title);
+        }
+
+        public void setSavedData(Map<String, String> savedData) {
+            this.savedData = savedData;
+        }
+    }
 
 }
