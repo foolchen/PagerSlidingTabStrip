@@ -111,7 +111,7 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
 
     private int lastScrollX = 0;
 
-    private int tabBackgroundResId = android.R.color.transparent;
+    private int tabBackgroundResId = R.drawable.background_tab;
 
     private Locale locale;
 
@@ -358,7 +358,7 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
             lineRight = (currentPositionOffset * nextTabRight + (1f - currentPositionOffset) * lineRight);
         }
 
-        canvas.drawRect(lineLeft, height - indicatorHeight, lineRight, height, rectPaint);
+        canvas.drawRect(getPaddingLeft() + lineLeft, height - indicatorHeight, lineRight + getPaddingRight(), height, rectPaint);
 
         // draw underline
 
