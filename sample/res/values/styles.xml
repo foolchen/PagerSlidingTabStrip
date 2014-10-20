@@ -25,6 +25,7 @@
         <item name="pstsTextBold">false</item>
         <item name="pstsUnderlineHeight">0dp</item>
         <item name="pstsTabPaddingLeftRight">10dp</item>
+        <item name="pstsDividerPadding">0dp</item>
     </style>
 
 </resources>
